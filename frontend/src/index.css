@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4F46E5;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #64748b;
+  --color-background: var(--bg-color);
+  --color-foreground: var(--text-color);
+  --color-surface: var(--surface-color);
+  --color-border: var(--border-color);
+  --color-muted: #94a3b8;
+  --color-muted-foreground: #64748b;
+  --color-accent: #818cf8;
+  
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+
+  --font-sans: "Inter", "Outfit", system-ui, sans-serif;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #0f172a;
+  --surface-color: #f8fafc;
+  --border-color: #e2e8f0;
+}
+
+.dark {
+  --bg-color: #020617;
+  --text-color: #f8fafc;
+  --surface-color: #0f172a;
+  --border-color: #1e293b;
+}
+
+@layer base {
+  * {
+    border-color: var(--border-color);
+  }
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: "Inter", sans-serif;
+  }
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glassmorphism {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
