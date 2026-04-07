@@ -1,8 +1,29 @@
-import React from 'react';
-import { communityPosts } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { fetchCommunityPosts } from '../services/api';
 import { MessageSquare, Heart, Share2, Users, Flame, Hash } from 'lucide-react';
 
 export function Community() {
+  const [communityPosts, setCommunityPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const data = await fetchCommunityPosts();
+        setCommunityPosts(data);
+      } catch (error) {
+        console.error('Failed to load community posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPosts();
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

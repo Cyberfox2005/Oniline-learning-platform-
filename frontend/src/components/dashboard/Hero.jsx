@@ -1,16 +1,44 @@
-import React from 'react';
-import { mockUser } from '../../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { fetchUser } from '../../services/api';
 import { PlayCircle, ArrowRight } from 'lucide-react';
 
 export function Hero() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const data = await fetchUser();
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  if (loading || !user) {
+    return <div className="bg-primary rounded-3xl p-8 lg:p-12 text-white shadow-2xl shadow-primary/20 animate-pulse">
+      <div className="h-8 bg-white/20 rounded mb-4 w-64"></div>
+      <div className="h-4 bg-white/20 rounded mb-8 w-96"></div>
+      <div className="flex gap-4">
+        <div className="h-12 bg-white/20 rounded-xl w-40"></div>
+        <div className="h-12 bg-white/20 rounded-xl w-32"></div>
+      </div>
+    </div>;
+  }
   return (
     <div className="relative overflow-hidden bg-primary rounded-3xl p-8 lg:p-12 text-white shadow-2xl shadow-primary/20 animate-in fade-in zoom-in duration-1000">
       <div className="relative z-10 max-w-2xl">
         <h1 className="text-3xl lg:text-5xl font-bold mb-4 tracking-tight">
-          Welcome back, {mockUser.name}! 👋
+          Welcome back, {user.name}! 👋
         </h1>
         <p className="text-primary-foreground/80 text-lg mb-8 leading-relaxed">
-          You've completed <span className="font-bold text-white">{mockUser.progress}%</span> of your weekly goal. 
+          You've completed <span className="font-bold text-white">{user.progress}%</span> of your weekly goal. 
           Keep up the great work and reach your milestones!
         </p>
         

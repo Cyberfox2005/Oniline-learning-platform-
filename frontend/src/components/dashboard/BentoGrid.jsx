@@ -1,13 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flame, Award, Clock, Calendar } from 'lucide-react';
-import { mockUser, upcomingDeadlines } from '../../data/mockData';
+import { fetchUser, fetchUpcomingDeadlines } from '../../services/api';
 import { cn } from '../../utils/utils';
 
 export function BentoGrid() {
+  const [user, setUser] = useState(null);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [userData, deadlinesData] = await Promise.all([
+          fetchUser(),
+          fetchUpcomingDeadlines()
+        ]);
+        setUser(userData);
+        setUpcomingDeadlines(deadlinesData);
+      } catch (error) {
+        console.error('Failed to load bento data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading || !user) {
+    return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+      <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="bg-white p-6 rounded-3xl border border-border dark:bg-slate-900 dark:border-slate-800 animate-pulse">
+            <div className="w-12 h-12 bg-gray-200 rounded-2xl mb-4"></div>
+            <div className="h-4 bg-gray-200 rounded mb-1"></div>
+            <div className="h-6 bg-gray-200 rounded"></div>
+          </div>
+        ))}
+      </div>
+      <div className="bg-white p-6 rounded-3xl border border-border dark:bg-slate-900 dark:border-slate-800 animate-pulse">
+        <div className="h-6 bg-gray-200 rounded mb-6"></div>
+        <div className="space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-16 bg-gray-200 rounded-2xl"></div>
+          ))}
+        </div>
+      </div>
+    </div>;
+  }
+
   const stats = [
-    { label: "Hours Studied", value: mockUser.stats.hoursStudied, icon: Clock, color: "bg-blue-50 text-blue-600 dark:bg-blue-900/20" },
-    { label: "Certificates", value: mockUser.stats.certificates, icon: Award, color: "bg-amber-50 text-amber-600 dark:bg-amber-900/20" },
-    { label: "Day Streak", value: mockUser.stats.streak, icon: Flame, color: "bg-orange-50 text-orange-600 dark:bg-orange-900/20" },
+    { label: "Hours Studied", value: user.stats.hoursStudied, icon: Clock, color: "bg-blue-50 text-blue-600 dark:bg-blue-900/20" },
+    { label: "Certificates", value: user.stats.certificates, icon: Award, color: "bg-amber-50 text-amber-600 dark:bg-amber-900/20" },
+    { label: "Day Streak", value: user.stats.streak, icon: Flame, color: "bg-orange-50 text-orange-600 dark:bg-orange-900/20" },
   ];
 
   return (

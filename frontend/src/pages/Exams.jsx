@@ -1,9 +1,30 @@
-import React from 'react';
-import { exams } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { fetchExams } from '../services/api';
 import { Calendar, Clock, Award, ChevronRight, AlertCircle, FileText } from 'lucide-react';
 import { cn } from '../utils/utils';
 
 export function Exams() {
+  const [exams, setExams] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadExams = async () => {
+      try {
+        const data = await fetchExams();
+        setExams(data);
+      } catch (error) {
+        console.error('Failed to load exams:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadExams();
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center justify-between">

@@ -1,5 +1,5 @@
-import React from 'react';
-import { assignments } from '../data/mockData';
+import React, { useState, useEffect } from 'react';
+import { fetchAssignments } from '../services/api';
 import { 
   createColumnHelper, 
   flexRender, 
@@ -73,11 +73,33 @@ const columns = [
 ];
 
 export function Assignments() {
+  const [assignments, setAssignments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadAssignments = async () => {
+      try {
+        const data = await fetchAssignments();
+        setAssignments(data);
+      } catch (error) {
+        console.error('Failed to load assignments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAssignments();
+  }, []);
+
   const table = useReactTable({
     data: assignments,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

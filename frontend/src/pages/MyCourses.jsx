@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CourseCard } from '../components/dashboard/CourseCard';
-import { courses } from '../data/mockData';
+import { fetchCourses } from '../services/api';
 import { Search, Filter, SlidersHorizontal } from 'lucide-react';
 
 export function MyCourses({ onCourseClick }) {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const categories = ['All', 'Development', 'Design', 'Marketing', 'Business'];
+
+  useEffect(() => {
+    const loadCourses = async () => {
+      try {
+        const data = await fetchCourses();
+        setCourses(data);
+      } catch (error) {
+        console.error('Failed to load courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCourses();
+  }, []);
 
   const filteredCourses = filter === 'All' 
     ? courses 
     : courses.filter(course => course.category === filter);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

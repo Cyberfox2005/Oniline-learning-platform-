@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Bell, Palette, Shield, Globe } from 'lucide-react';
-import { mockUser } from '../data/mockData';
+import { fetchUser } from '../services/api';
 
 export function Settings() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const data = await fetchUser();
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
+
+  if (loading || !user) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -36,7 +57,7 @@ export function Settings() {
             
             <div className="flex flex-col sm:flex-row gap-6 mb-8 items-start sm:items-center">
               <img 
-                src={mockUser.avatar || "https://i.pravatar.cc/150?u=abdelouaheb"} 
+                src={user.avatar || "https://i.pravatar.cc/150?u=abdelouaheb"} 
                 alt="Profile" 
                 className="w-24 h-24 rounded-2xl object-cover bg-slate-100 border-4 border-white dark:border-slate-800 shadow-md relative z-10"
               />
@@ -57,7 +78,7 @@ export function Settings() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium dark:text-white">Full Name</label>
-                  <input type="text" defaultValue={mockUser.name || "Student"} className="w-full px-4 py-2.5 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none dark:bg-slate-800 dark:text-white shadow-inner" />
+                  <input type="text" defaultValue={user.name || "Student"} className="w-full px-4 py-2.5 bg-surface border-none rounded-xl focus:ring-2 focus:ring-primary/20 transition-all outline-none dark:bg-slate-800 dark:text-white shadow-inner" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium dark:text-white">Email Address</label>

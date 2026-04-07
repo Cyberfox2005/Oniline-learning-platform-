@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, Moon, Sun, ChevronDown, Menu } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { mockUser } from '../../data/mockData';
+import { fetchUser } from '../../services/api';
 import { cn } from '../../utils/utils';
 
 export function Topbar({ onMenuClick }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -14,6 +15,19 @@ export function Topbar({ onMenuClick }) {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const data = await fetchUser();
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   return (
     <header className="h-20 bg-white/80 backdrop-blur-md border-b border-border px-6 flex items-center justify-between sticky top-0 z-30 dark:bg-slate-900/80 dark:border-slate-800">
@@ -89,12 +103,12 @@ export function Topbar({ onMenuClick }) {
           <DropdownMenu.Trigger asChild>
             <button className="flex items-center gap-3 p-1 rounded-xl hover:bg-surface transition-colors dark:hover:bg-slate-800 outline-none">
               <img 
-                src={mockUser.avatar} 
+                src={user?.avatar} 
                 alt="Profile" 
                 className="w-10 h-10 rounded-xl object-cover bg-slate-100"
               />
               <div className="hidden sm:block text-left">
-                <p className="text-sm font-semibold dark:text-white truncate max-w-[100px]">{mockUser.name}</p>
+                <p className="text-sm font-semibold dark:text-white truncate max-w-[100px]">{user?.name}</p>
                 <p className="text-xs text-muted-foreground">Student</p>
               </div>
               <ChevronDown size={16} className="text-muted-foreground" />

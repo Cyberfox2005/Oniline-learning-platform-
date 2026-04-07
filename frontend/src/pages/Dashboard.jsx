@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Hero } from '../components/dashboard/Hero';
 import { CourseCard } from '../components/dashboard/CourseCard';
 import { BentoGrid } from '../components/dashboard/BentoGrid';
-import { courses, recentActivity } from '../data/mockData';
+import { fetchCourses, fetchRecentActivity } from '../services/api';
 import { Activity, ArrowRight } from 'lucide-react';
 
 export function Dashboard({ onCourseClick }) {
+  const [courses, setCourses] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [coursesData, activityData] = await Promise.all([
+          fetchCourses(),
+          fetchRecentActivity()
+        ]);
+        setCourses(coursesData);
+        setRecentActivity(activityData);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">Loading...</div>;
+  }
   return (
     <div className="space-y-10">
       <Hero />
