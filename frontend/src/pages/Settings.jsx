@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, Bell, Palette, Shield, Globe } from 'lucide-react';
-import { mockUser } from '../../data/mockData';
+import { mockUser } from '../data/mockData';
 
 export function Settings() {
   return (
